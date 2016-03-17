@@ -7,6 +7,7 @@ from collections import defaultdict
 import os
 import uuid
 
+
 class Friend(object):
     def __init__(self, name, major, school, company):
         self.name = name
@@ -147,8 +148,7 @@ class ScenarioGenerator(object):
         user1_friends = [connection]
         user2_friends = [connection]
         scenario["connection"] = {"info": connection.__info__()}
-        scenario["user1"] = {"info": user1.__info__()}
-        scenario["user2"] = {"info": user2.__info__()}
+        scenario["agents"] = [{"info": user1.__info__()}, {"info": user2.__info__()}]
 
         # add all friends of each user except their mutual friends (apart from the one common connection
         user1_friends.extend([f for f in self.network.relationships[user1] if f not in self.network.relationships[user2]])
@@ -182,8 +182,8 @@ class ScenarioGenerator(object):
         # print len(user1_friends), len(user2_friends)
         np.random.shuffle(user1_friends)
         np.random.shuffle(user2_friends)
-        scenario["user1"]["friends"] = [f.__info__() for f in user1_friends]
-        scenario["user2"]["friends"] = [f.__info__() for f in user2_friends]
+        scenario["agents"][0]["friends"] = [f.__info__() for f in user1_friends]
+        scenario["agents"][1]["friends"] = [f.__info__() for f in user2_friends]
 
         common = [f for f in user1_friends if f in user2_friends]
         assert len(common)==1, "error"
@@ -205,14 +205,14 @@ def write_user(info, outfile, fewer_lines=False):
 
     
 def write_scenario_to_readable_file(scenario, user1_file, user2_file):
-    write_user(scenario["user1"]["info"], user1_file)
+    write_user(scenario["agents"][0]["info"], user1_file)
     user1_file.write("Friends:\n")
-    for f in scenario["user1"]["friends"]:
+    for f in scenario["agents"][0]["friends"]:
         write_user(f, user1_file, fewer_lines=True)
         user1_file.write("\n")
-    write_user(scenario["user2"]["info"], user2_file)
+    write_user(scenario["agents"][1]["info"], user2_file)
     user2_file.write("Friends:\n")
-    for f in scenario["user2"]["friends"]:
+    for f in scenario["agents"][1]["friends"]:
         write_user(f, user2_file, fewer_lines=True)
         user2_file.write("\n")
 
