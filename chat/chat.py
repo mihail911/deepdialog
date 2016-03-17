@@ -43,8 +43,8 @@ if __name__ == '__main__':
 
     init_database(params["db"]["location"])
     clear_data(params["logging"]["chat_dir"])
-
-    app = create_app(debug=True)
+    templates_dir = params["templates_dir"]
+    app = create_app(debug=True, templates_dir=templates_dir)
 
     with open(params["scenarios_json_file"]) as fin:
         scenarios = json.load(fin)
@@ -54,6 +54,6 @@ if __name__ == '__main__':
     app.config["scenarios"] = scenarios_dict
     app.config["outcomes"] = defaultdict(lambda : -1)
 
-    logging.basicConfig(filename=params["logging"]["app_logs"], level=logging.INFO)
+    # logging.basicConfig(filename=params["logging"]["app_logs"], level=logging.INFO)
 
     socketio.run(app, host=args.host)

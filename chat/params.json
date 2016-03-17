@@ -22,9 +22,10 @@
 	}
     },
     
-    "scenarios_json_file": "scenarios.json",
+    "scenarios_json_file": "friend_scenarios.json",
     "single_tasks_json_file": "single_tasks.json",
     "connection_timeout_num_seconds": 15,
+  	"templates_dir": "friend_templates",
     
     "db": {
 	"location": "/home/mkayser/research/deepdialog/chat/chat_state.db"
