@@ -389,8 +389,10 @@ class BackendConnection(object):
 
     def pick_restaurant(self, userid, restaurant_index):
         def _get_points(scenario, agent_index, restaurant_name):
-            return next(obj["utility"] for obj in scenario["agents"][agent_index]["sorted_restaurants"] if
-                        obj["name"] == restaurant_name)
+            result = scenario["connection"]["info"]["name"]
+            if result == restaurant_name:
+                return 5
+            return 0
 
         def _user_finished(cursor, userid, prev_points, my_points, other_points, prev_chats_completed, optimal_choice=None):
             message = "<h3>Great, you've finished the chat! You scored {} points and your friend scored {} points.</h3>".format(
@@ -398,13 +400,13 @@ class BackendConnection(object):
             logger.info("Updating user %s to status FINISHED from status chat, with total points %d+%d=%d" %
                         (userid[:6], prev_points, my_points, prev_points + my_points))
             if optimal_choice:
-                message += "<p>The best restaurant you could have chosen, given your preferences, was <b>%s</b> (%d points).</p>" % (optimal_choice["name"], optimal_choice["points"])
+                # message += "<p>The best restaurant you could have chosen, given your preferences, was <b>%s</b> (%d points).</p>" % (optimal_choice["name"], optimal_choice["points"])
                 self._update_user(cursor, userid, status=Status.Finished, message=message,
                                   cumulative_points=prev_points + my_points,
                                   num_chats_completed=prev_chats_completed + 1,
                                   bonus=0)
             else:
-                message += "<p>You chose the best restaurant given your preferences!<p>"
+                # message += "<p>You chose the best restaurant given your preferences!<p>"
                 self._update_user(cursor, userid, status=Status.Finished, message=message,
                                   cumulative_points=prev_points + my_points,
                                   num_chats_completed=prev_chats_completed + 1,
@@ -412,11 +414,12 @@ class BackendConnection(object):
                                   )
 
         def _is_optimal_choice(scenario, agent_index, restaurant_name, user_points):
-            top_choice = scenario["agents"][agent_index]["sorted_restaurants"][0]["name"]
-            best_points = scenario["agents"][agent_index]["sorted_restaurants"][0]["utility"]
-            second_choice = scenario["agents"][agent_index]["sorted_restaurants"][1]["name"]
-            optimal = {"name":top_choice, "points":best_points}
-            return top_choice == restaurant_name or second_choice == restaurant_name or best_points == user_points, optimal
+            # top_choice = scenario["agents"][agent_index]["sorted_restaurants"][0]["name"]
+            # best_points = scenario["agents"][agent_index]["sorted_restaurants"][0]["utility"]
+            # second_choice = scenario["agents"][agent_index]["sorted_restaurants"][1]["name"]
+            # optimal = {"name":top_choice, "points":best_points}
+            result = scenario["connection"]["info"]["name"]
+            return restaurant_name == result
 
         try:
             with self.conn:
@@ -431,8 +434,10 @@ class BackendConnection(object):
                     cursor.fetchone(), BadChatException)
                 P = u.cumulative_points
                 scenario = self.scenarios[u.scenario_id]
-                restaurant_name = scenario["restaurants"][restaurant_index]["name"]
-                if u.selected_index == other_restaurant_index:
+
+                restaurant_name = scenario["agents"][u.agent_index]["friends"][restaurant_index]["name"]
+                other_name = scenario["agents"][1-u.agent_index]["friends"][other_restaurant_index]["name"]
+                if restaurant_name == other_name:
                     # Match
                     logger.info("User %s restaurant selection matches with partner's. Selected restaurant: %s" % (
                         userid[:6], restaurant_name))
@@ -441,18 +446,17 @@ class BackendConnection(object):
                     logger.info("User %s got %d points, User %s got %d points" % (
                         userid[:6], Pdelta, other_userid[:6], other_Pdelta))
 
-                    is_optimal, optimal_choice = _is_optimal_choice(scenario, u.agent_index, restaurant_name, Pdelta)
-                    other_is_optimal, other_optimal_choice = _is_optimal_choice(scenario, 1 - u.agent_index,
+                    is_optimal = _is_optimal_choice(scenario, u.agent_index, restaurant_name, Pdelta)
+                    other_is_optimal = _is_optimal_choice(scenario, 1 - u.agent_index,
                                                                                 restaurant_name, other_Pdelta)
                     if is_optimal:
                         _user_finished(cursor, userid, P, Pdelta, other_Pdelta, u.num_chats_completed)
                     else:
-                        _user_finished(cursor, userid, P, Pdelta, other_Pdelta, u.num_chats_completed, optimal_choice)
+                        _user_finished(cursor, userid, P, Pdelta, other_Pdelta, u.num_chats_completed)
                     if other_is_optimal:
                         _user_finished(cursor, other_userid, other_P, other_Pdelta, Pdelta, other_num_chats_completed)
                     else:
-                        _user_finished(cursor, other_userid, other_P, other_Pdelta, Pdelta, other_num_chats_completed,
-                                       other_optimal_choice)
+                        _user_finished(cursor, other_userid, other_P, other_Pdelta, Pdelta, other_num_chats_completed)
                     return restaurant_name, True
                 else:
                     logger.debug("User %s selection (%d) doesn't match with partner's selection (%d). " %

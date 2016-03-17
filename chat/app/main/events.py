@@ -99,17 +99,17 @@ def pick(message):
         return
     room = session["room"]
     restaurant, is_match = backend.pick_restaurant(userid(), restaurant_id)
-    logger.debug("User %s in room %d selected restaurant: %s" % (userid_prefix(), room, restaurant))
+    logger.debug("User %s in room %d selected: %s" % (userid_prefix(), room, restaurant))
     if is_match:
         logger.info("User %s selection matches with partner selection" % userid_prefix())
-        emit_message_to_chat_room("Both users have selected restaurant: \"{}\"".format(restaurant), status_message=True)
+        emit_message_to_chat_room("Both users have selected: \"{}\"".format(restaurant), status_message=True)
         emit('endchat',
              {'message': "You've completed this task! Redirecting you..."},
              room=room)
     else:
         logger.debug("User %s selection doesn't match with partner selection" % userid_prefix())
-        emit_message_to_partner("Your friend has selected restaurant: \"{}\"".format(restaurant), status_message=True)
-        emit_message_to_self("You selected restaurant: \"{}\"".format(restaurant), status_message=True)
+        emit_message_to_partner("Your friend has selected: \"{}\"".format(restaurant), status_message=True)
+        emit_message_to_self("You selected: \"{}\"".format(restaurant), status_message=True)
     write_outcome(restaurant_id, restaurant, chat_info)
 
 
@@ -192,5 +192,5 @@ def write_to_file(message):
 
 def write_outcome(idx, name, chat_info):
     outfile = open('%s/ChatRoom_%s' % (app.config["user_params"]["logging"]["chat_dir"], str(session["room"])), 'a+')
-    outfile.write("%s\t%s\tUser %s\tSelected restaurant %d:\t%s\n" %
+    outfile.write("%s\t%s\tUser %s\tSelected %d:\t%s\n" %
                   (datetime.now().strftime(date_fmt), chat_info.scenario["uuid"], chat_info.agent_index, idx, name))
