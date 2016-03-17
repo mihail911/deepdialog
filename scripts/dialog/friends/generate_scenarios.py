@@ -150,14 +150,17 @@ class ScenarioGenerator(object):
         scenario["connection"] = {"info": connection.__info__()}
         scenario["agents"] = [{"info": user1.__info__()}, {"info": user2.__info__()}]
 
-        # add all friends of each user except their mutual friends (apart from the one common connection
+        # add all friends of each user except their mutual friends (apart from the one common connection)
         user1_friends.extend([f for f in self.network.relationships[user1] if f not in self.network.relationships[user2]])
         user2_friends.extend([f for f in self.network.relationships[user2] if f not in self.network.relationships[user1]])
+        if len(user1_friends) > num_friends:
+            user1_friends = user1_friends[:num_friends]
 
-        # print len(user1_friends), len(user2_friends)
+        if len(user2_friends) > num_friends:
+            user2_friends = user2_friends[:num_friends]
+
         ctr = 0
-        while ctr < len(self.network.friends) and \
-                        len(user1_friends) < num_friends:
+        while ctr < len(self.network.friends) and len(user1_friends) < num_friends:
             friend = self.network.friends[ctr]
             if friend == user1 or friend == user2 or friend == connection:
                 ctr += 1
@@ -168,8 +171,7 @@ class ScenarioGenerator(object):
             ctr += 1
 
         ctr = 0
-        while ctr < len(self.network.friends) and \
-                        len(user2_friends) < num_friends:
+        while ctr < len(self.network.friends) and len(user2_friends) < num_friends:
             friend = self.network.friends[ctr]
             if friend == user1 or friend == user2 or friend == connection:
                 ctr += 1
