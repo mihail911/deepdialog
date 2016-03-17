@@ -18,7 +18,7 @@ for name in os.listdir(dirname):
     for line in f.readlines():
         cols = line.strip().split("\t")
         if len(cols) > 2 and "has user ID" in cols[2]:
-            first_line = cols[0:1]
+            first_line = cols[0:2]
             try:
                 date_idx = cols[2].index("02-24-2016")
                 user_id_col = cols[2][:date_idx]
