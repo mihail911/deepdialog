@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 import json
 from collections import defaultdict
 import os
-
+import uuid
 
 class Friend(object):
     def __init__(self, name, major, school, company):
@@ -238,6 +238,7 @@ def main(args):
         scen_file_2 = open(os.path.join(args.scenario_dir, 'scenario%d_User2.out' % i,), 'w')
         scenario_gen = ScenarioGenerator(generator.network)
         scenario = scenario_gen.generate_scenario(num_friends=10)
+        scenario["uuid"] = str(uuid.uuid4())
         scenarios.append(scenario)
         write_scenario_to_readable_file(scenario, scen_file_1, scen_file_2)
         # write_json_to_file(generator.network, args.output)
@@ -250,9 +251,8 @@ def main(args):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('--size', type=int, default=50, help='Size of network to generate')
+    parser.add_argument('--size', type=int, default=150, help='Size of network to generate')
     parser.add_argument('--output', type=str, default='data/scenarios.json', help='File to write networks to.')
-    parser.add_argument('--n')
     parser.add_argument('--num_scenarios', type=int, default=100, help='Number of scenarios to generate')
     parser.add_argument('--scenario_dir', default='data/scenarios', help='File to write scenario to')
 
