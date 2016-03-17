@@ -95,6 +95,7 @@ def index():
         chat_info = backend.get_chat_info(userid())
         presentation_config = app.config["user_params"]["status_params"]["chat"]["presentation_config"]
         session["room"] = chat_info.room_id
+        print chat_info.agent_info
         return render_template('chat.html',
                                room=chat_info.room_id,
                                scenario=chat_info.scenario,

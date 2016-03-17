@@ -13,9 +13,9 @@ def close_connection(exception):
         backend.close()
 
 
-def create_app(debug=False):
+def create_app(debug=False, templates_dir='templates'):
     """Create an application."""
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder=templates_dir)
     app.debug = debug
     app.config['SECRET_KEY'] = 'gjr39dkjn344_!67#'
 
