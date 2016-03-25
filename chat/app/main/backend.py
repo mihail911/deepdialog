@@ -308,9 +308,9 @@ class BackendConnection(object):
                     mturk_code = _generate_mturk_code(u)
                     message = u.message
                     logger.info("User %s bonus status: %s" % (userid[:6], str(u.bonus)))
-                    if u.bonus == 1:
-                        logger.info("User %s has bonus" % userid[:6])
-                        message += "<p><b>Good job on this negotiation! You'll receive a bonus on Mechanical Turk.</b></p>"
+                    # if u.bonus == 1:
+                    #     logger.info("User %s has bonus" % userid[:6])
+                        # message += "<p><b>Good job on this negotiation! You'll receive a bonus on Mechanical Turk.</b></p>"
                     _add_finished_task_row(cursor, userid, mturk_code, u.num_single_tasks_completed,
                                            u.num_chats_completed, u.bonus)
                     self._update_user(cursor, userid, bonus=0)

@@ -5,11 +5,11 @@
 
 	  div#questions {
 	  float:left;
-	  width: 60%;
+	  width: 40%;
 	  }
 
 	  div#info_container {
-	  margin-left: 62%;
+	  margin-left: 42%;
 	  }
 	  img.heart {
 	  height: 15px;
@@ -61,21 +61,16 @@
             function validateResponse() {
                 ddRestaurants = document.getElementById("restaurantChoices");
             	textArea = document.getElementById("starterText");
-            	selected_idx = ddRestaurants.options[ddRestaurants.selectedIndex].value;
-            	selected_restaurant = ddRestaurants.options[ddRestaurants.selectedIndex].text;
+
             	starter_text = starterText.value;
 
-            	if (selected_idx != -1 && starter_text != "") {
+            	if (starter_text != "") {
             		console.log("valid");
-            	    document.getElementById('choiceError').style.display="none";
             	    document.getElementById('textError').style.display="none";
-            	    return {'restaurant': selected_restaurant,
-            	    		'restaurant_index': selected_idx,
+            	    return {'restaurant': "null",
+            	    		'restaurant_index': -1,
             	            'starter_text': starter_text,
             	            'valid': true};
-            	}
-            	if (selected_idx == -1) {
-            	    document.getElementById('choiceError').style.display="block";
             	}
             	if (starter_text == "") {
                     document.getElementById('textError').style.display="block";
@@ -92,27 +87,14 @@
             There are no other users online at the moment - practice your negotiation skills in the meantime!
         </h4>
         <p>
-            Imagine that it's a Friday night, and you're about to chat with a friend to decide where to go for dinner.
-            You've discovered that there are <b>{{scenario["restaurants"]|length}}</b> restaurants nearby.
-            Take a look at your preferences for cuisine and price range <b>to the right</b>, and then answer the questions <b>below</b>.
+            Imagine that you've just met someone new online, and you want to find out whether you have any mutual friends. </br>
+            <b>Your information</b> (school, major, company) are on the <b>right</b>, as well as a list of <b>your friends</b>, with their information.
         </p>
         <hr>
         <h4>
-            Given your preferences and the different restaurant options, which restaurant would be your top choice?
+            What is the first thing you would say to find out which friends you have in common with this new user? </br>Please do not enter greetings or other fillers like "hi", "what's your name", etc.
         </h4>
 
-        <div id="choiceError" class="error" style="display:none"><h3>Please select a valid option below</h3></div>
-        <select id="restaurantChoices">
-            <option selected="selected" value=-1>-- Select one --</option>
-            {% set ctr = 0 %}
-            {% for restaurant in scenario["restaurants"] %}
-            <option value={{ctr}}>{{ restaurant["name"] }}</option>
-            {% set ctr = ctr + 1 %}
-            {% endfor %}
-        </select>
-        <h4>
-            What is the first thing you would say to negotiate on a place to eat?
-        </h4>
         <div id="textError" class="error" style="display:none"><h3>Please enter your response in the box.</h3></div>
         <textarea id="starterText" rows="2" cols="50"></textarea>
         <button id="submit_task" onclick="validateAndSubmit();">
@@ -123,64 +105,52 @@
 	<div id="info_container">
 	<div id="preferences">
 
-            <h3>Your cuisine preferences</h3>
+            <h3>Your information</h3>
             <table class="cuisine_preferences_list">
-				{% for cuisine in agent["cuisine_func"] %}
 					<tr>
-						<td>{{cuisine["cuisine"]}} </td>
+						<td>Name</td>
 						<td>
-						{% if config["numerical_preferences"] %} 
-						<span class="points"> ({{ cuisine["utility"] }} points) </span> 
-						{% else %} 
-						{% for i in range(cuisine["utility_rating"]) %} <img src="{{ url_for('static', filename='img/heart.svg') }}" class="heart"/> {% endfor %}
-						{% endif %} 
+						{{ agent["info"]["name"] }}
 						</td>
 				  </tr>
-					{% endfor %}
+				  <tr>
+						<td>School</td>
+						<td>
+						{{ agent["info"]["school"]["name"] }}
+						</td>
+				  </tr>
+				  <tr>
+						<td>Major</td>
+						<td>
+						{{ agent["info"]["school"]["major"] }}
+						</td>
+				  </tr>
+				  <tr>
+						<td>Company</td>
+						<td>
+						{{ agent["info"]["company"]["name"] }}
+						</td>
+				  </tr>
 			</table>
 
-            <h3>Your price range preference</h3>
 
-	    {% if config["numerical_prices"] %} 
-	    <ul>
-	      {% for obj in agent["spending_func"] %}
-              <li>
-		${{ obj["price_range"][0] }} - ${{ obj["price_range"][1] }}
-	      </li>
-	      <span class="points"> ({{ obj["utility"] }} points) </span> </li>
-              {% endfor %}
-	    </ul>
-
-            {% else %}
-            {% for i in range((agent["spending_func"][0]["price_rating"]) | int) %} 
-              <img src="{{ url_for('static', filename='img/dollar.png') }}" class="dollar"/> 
-            {% endfor %}
-            {% endif %}
-
-            <h3>Restaurants nearby</h3>
+            <h3>Your friends</h3>
 	    <table class="sortable">
 	    <thead>
 	    <tr>
 	    <th>Name</th>
-	    <th>Cuisine</th>
-	    <th class="sorttable_numeric">Price range</th>
+	    <th>School</th>
+	    <th>Major</th>
+	    <th>Company</th>
 	    </tr>
 	    </thead>
 	    <tbody>
-            {% for restaurant in scenario["restaurants"] %}
+            {% for friend in agent["friends"] %}
             <tr>
-				<td><b>{{ restaurant["name"] }}</b></td>
-				<td>{{ restaurant["cuisine"]}}</td> 
-				
-				<td sorttable_customkey="{{restaurant['price_rating'] | int}}">
-				  {% if config["numerical_prices"] %} 
-				  ${{ restaurant["price_range"][0] }} - ${{ restaurant["price_range"][1] }}
-					  {% else %}
-						{% for i in range((restaurant["price_rating"]) | int) %} 
-					  <img src="{{ url_for('static', filename='img/dollar.png') }}" class="dollar"/> 
-						{% endfor %}
-					{% endif %}
-				</td>
+				<td><b>{{ friend["name"] }}</b></td>
+				<td>{{ friend["school"]["name"]}}</td> 
+				<td>{{ friend["school"]["major"]}}</td> 
+				<td>{{ friend["company"]["name"]}}</td> 
 	    	</tr>
 	    {% endfor %}
 	    </tbody>
