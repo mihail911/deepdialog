@@ -81,6 +81,7 @@
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
             var socket, validCheckInterval;
+            var selectTime = null;
             $(document).ready(function(){
                 socket = io.connect('http://' + document.domain + ':' + location.port+'/chat');
                 socket.on('connect', function() {
@@ -109,7 +110,17 @@
 	    		
 	    		$('#ddRestaurants').change(function() {
 	    			selected = $('option:selected').val();
-                	socket.emit('pick', {restaurant: selected});
+	    			if(selectTime == null) {
+	    				selectTime = new Date();
+	    				socket.emit('pick', {restaurant: selected});
+					}
+					else {
+						var currentTime = new Date();
+						if ((currentTime - selectTime) > 10000) {
+							socket.emit('pick', {restaurant: selected});
+							selectTime = currentTime;
+						} //otherwise do nothing
+					}
                 });
                 
 				validCheckInterval = setInterval(pollServer, 3000);
@@ -179,6 +190,7 @@
 	  <li> Look at <b>your information</b> (your school and company), and the list of <b>your friends</b> at right. </li>
 	  <li> Use the <b>chat box below</b> to find out more about the other user and discover your mutual friend. </li>
 	  <li> Once you've found out who it is, select their name from the <b>drop down list on the right</b>.
+	  <li style="color:#FF0000"><b>Please select names carefully</b>. If you select a name once, the website will not allow you to select another name for 10 seconds after your first selection.</li>
 	</ul>
 	</div>
 
