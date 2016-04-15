@@ -167,7 +167,7 @@ def start_chat():
     outfile.write("%s\t%s\tUser %s\tjoined\n" % (datetime.now().strftime(date_fmt),
                                                  chat_info.scenario["uuid"],
                                                  str(chat_info.agent_index)))
-    outfile.write("%s\t%s\tUser %s has user ID %s" % (datetime.now().strftime(date_fmt),
+    outfile.write("%s\t%s\tUser %s has user ID %s\n" % (datetime.now().strftime(date_fmt),
                                                       chat_info.scenario["uuid"],
                                                       str(chat_info.agent_index),
                                                       userid()))
