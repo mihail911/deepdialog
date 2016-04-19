@@ -94,6 +94,10 @@ class Messages(object):
 
 
 class BackendConnection(object):
+    """
+    Performs all the logic for pairing users into a chat, computing scores wherever needed,
+    choosing scenarios for display, logging to database, etc.
+    """
     def __init__(self, config, scenarios):
         self.config = config
 
@@ -105,6 +109,11 @@ class BackendConnection(object):
         self.conn = None
 
     def create_user_if_necessary(self, username):
+        """
+        Adds a new user to the database if necessary
+        :param username:
+        :return:
+        """
         with self.conn:
             cursor = self.conn.cursor()
             now = current_timestamp_in_seconds()
@@ -113,6 +122,12 @@ class BackendConnection(object):
                            (username, Status.Waiting, now, 0, now, "", -1, "", "", -1, -1, "", 0, 0, 0, 0))
 
     def is_status_unchanged(self, userid, assumed_status):
+        """
+        Checks whether the user's status has changed or not, based on the status that they are curerntly in.
+        :param userid:
+        :param assumed_status:
+        :return: True if the user's status is the same as the assumed status, False otherwise
+        """
         try:
             with self.conn:
                 cursor = self.conn.cursor()
@@ -149,6 +164,11 @@ class BackendConnection(object):
             print("WARNING: Rolled back transaction")
 
     def get_updated_status(self, userid):
+        """
+        Gets updated status for the user.
+        :param userid:
+        :return: One of Waiting, Chat, Finished, or SingleTask (see the Status class)
+        """
         try:
             logger.debug("Getting current status for user %s" % userid[:6])
             with self.conn:

@@ -8,6 +8,10 @@ from .backend import Status
 from .routes import userid
 import logging
 
+'''
+Handles all events to and from client (browser). Interfaces with the backend (backend.py)
+'''
+
 date_fmt = '%m-%d-%Y:%H-%M-%S'
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -21,8 +25,18 @@ def userid_prefix():
     return userid()[:6]
 
 
+'''
+Note: the two connect() functions below are functionally exactly the same. However, there are two separate socketIO
+namespaces (one for the chat template and one for all non-chat templates), so that the two have distinct event spaces,
+and so two different functions are required (one for each namespace).
+'''
+
+
 @socketio.on('connect', namespace='/main')
 def connect():
+    """
+    Signals backend when a user connects to the website on any template (page) other than the chat page.
+    """
     backend = get_backend()
     backend.connect(userid())
     logger.info("User %s established connection on non-chat template" % userid_prefix())
@@ -30,6 +44,9 @@ def connect():
 
 @socketio.on('connect', namespace='/chat')
 def connect():
+    """
+    Signals backend when a user connects to the website on the chat template.
+    """
     backend = get_backend()
     backend.connect(userid())
     logger.info("User %s established connection on chat template" % userid_prefix())
@@ -37,6 +54,13 @@ def connect():
 
 @socketio.on('is_chat_valid', namespace='/chat')
 def check_valid_chat(data):
+    """
+    Requests chat validity information from backend and returns it to the client. If the chat is invalid, the client acts
+    accordingly (default is to refresh so that a new page can be served.
+    :param data:
+    :return: A dict containing information about the validity of the chat and a message (if any)
+    that should be displayed to the user. (04/19: The message is currently not used by the client.)
+    """
     backend = get_backend()
 
     if backend.is_chat_valid(userid()):
@@ -49,6 +73,13 @@ def check_valid_chat(data):
 
 @socketio.on('check_status_change', namespace='/main')
 def check_status_change(data):
+    """
+    Checks whether the user's status should be changed (from waiting to chat, chat to finished, etc), and returns
+    that information to the client. If user status has changed, the client should act appropriately (default behavior
+    is to refresh).
+    :param data: A dict containing the current status of the user.
+    :return: A dict containing a True/False value for whether the user's status should be changed or not.
+    """
     backend = get_backend()
     assumed_status = Status.from_str(data['current_status'])
 
@@ -62,6 +93,11 @@ def check_status_change(data):
 
 @socketio.on('submit_task', namespace='/main')
 def submit_task(data):
+    """
+    Receives single task submission from client and sends to backend for logging.
+    :param data: A dict containing the single task data.
+    :return: None
+    """
     backend = get_backend()
     logger.debug("User %s submitted single task. Form data: %s" % (userid_prefix(), str(data)))
     backend.submit_single_task(userid(), data)
@@ -90,10 +126,17 @@ def text(message):
 
 @socketio.on('pick', namespace='/chat')
 def pick(message):
-    """Sent by a client when the user entered a new message.
-    The message is sent to all people in the room."""
+    """
+    Triggered when the user makes a selection in the chat on the client side. This function receives the selection from the client and
+     sends it to the backend. The backend checks whether the user's selection matches their partner's selection. If yes,
+     an 'endchat' event is emitted, telling the client that the chat has ended and that the page needs to be refreshed.
+     If not, nothing happens. In both cases, the user's selection is logged to the chat window.
+    :param message:
+    :return:
+    """
     backend = get_backend()
     chat_info = backend.get_chat_info(userid())
+    # todo the variable names here probably all need to be changed to be generic
     restaurant_id = int(message['restaurant'])
     if restaurant_id == -1:
         return
@@ -115,8 +158,12 @@ def pick(message):
 
 @socketio.on('disconnect', namespace='/chat')
 def disconnect():
-    """Sent by clients when they leave a room.
-    A status message is broadcast to all people in the room."""
+    """
+    When a user is disconnected from the chat template, this function notifies the backend and the user is removed
+    from that chat room accordingly.
+    :return:
+    """
+
     room = session["room"]
 
     leave_room(room)
@@ -130,7 +177,7 @@ def disconnect():
 @socketio.on('disconnect', namespace='/main')
 def disconnect():
     """
-    Called when user disconnects from any state
+    Called when user disconnects from any non-chat template
     :return: No return value
     """
     backend = get_backend()
@@ -139,6 +186,12 @@ def disconnect():
 
 
 def emit_message_to_self(message, status_message=False):
+    """
+    Function to log a message to the user's own chat window.
+    :param message:
+    :param status_message:
+    :return:
+    """
     timestamp = datetime.now().strftime('%x %X')
     left_delim = "<" if status_message else ""
     right_delim = ">" if status_message else ""
@@ -146,6 +199,12 @@ def emit_message_to_self(message, status_message=False):
 
 
 def emit_message_to_chat_room(message, status_message=False):
+    """
+    Function to log a message to the entire chat room
+    :param message:
+    :param status_message:
+    :return:
+    """
     timestamp = datetime.now().strftime('%x %X')
     left_delim = "<" if status_message else ""
     right_delim = ">" if status_message else ""
@@ -153,6 +212,12 @@ def emit_message_to_chat_room(message, status_message=False):
 
 
 def emit_message_to_partner(message, status_message=False):
+    """
+    Function to log a message to the current user's partner's chat window.
+    :param message:
+    :param status_message:
+    :return:
+    """
     timestamp = datetime.now().strftime('%x %X')
     left_delim = "<" if status_message else ""
     right_delim = ">" if status_message else ""
@@ -161,6 +226,10 @@ def emit_message_to_partner(message, status_message=False):
 
 
 def start_chat():
+    """
+    Starts the chat by creating a new file to log the chat transcript to.
+    :return:
+    """
     chat_info = get_backend().get_chat_info(userid())
 
     outfile = open('%s/ChatRoom_%s' % (app.config["user_params"]["logging"]["chat_dir"], str(session["room"])), 'a+')
@@ -175,6 +244,10 @@ def start_chat():
 
 
 def end_chat():
+    """
+    Ends the chat
+    :return:
+    """
     outfile = open('%s/ChatRoom_%s' % (app.config["user_params"]["logging"]["chat_dir"], str(session["room"])), 'a+')
     outfile.write(
         "%s\t%s\n" % (datetime.now().strftime(date_fmt), app.config["user_params"]["logging"]["chat_delimiter"]))
@@ -191,6 +264,13 @@ def write_to_file(message):
 
 
 def write_outcome(idx, name, chat_info):
+    """
+    Writes the outcome (user selection) to the chat transcript.
+    :param idx:
+    :param name:
+    :param chat_info:
+    :return:
+    """
     outfile = open('%s/ChatRoom_%s' % (app.config["user_params"]["logging"]["chat_dir"], str(session["room"])), 'a+')
     outfile.write("%s\t%s\tUser %s\tSelected %d:\t%s\n" %
                   (datetime.now().strftime(date_fmt), chat_info.scenario["uuid"], chat_info.agent_index, idx, name))
