@@ -1,4 +1,4 @@
-from flask import session, request
+from flask import session, request, g
 from flask import current_app as app
 from flask.ext.socketio import emit, join_room, leave_room
 from .. import socketio
@@ -6,7 +6,11 @@ from datetime import datetime
 from .utils import get_backend
 from .backend import Status
 from .routes import userid
+
+import cPickle as pickle
 import logging
+import os
+
 
 '''
 Handles all events to and from client (browser). Interfaces with the backend (backend.py)
@@ -20,6 +24,13 @@ handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# Make audio dir
+curr_dir = os.path.dirname(os.getcwd())
+audio_data_dir = curr_dir + "/data/audio"
+if not os.path.exists(audio_data_dir):
+    print "making directory..."
+    os.makedirs(audio_data_dir)
+
 
 def userid_prefix():
     return userid()[:6]
@@ -30,6 +41,8 @@ Note: the two connect() functions below are functionally exactly the same. Howev
 namespaces (one for the chat template and one for all non-chat templates), so that the two have distinct event spaces,
 and so two different functions are required (one for each namespace).
 '''
+
+count = 0
 
 
 @socketio.on('connect', namespace='/main')
@@ -100,7 +113,26 @@ def submit_task(data):
     """
     backend = get_backend()
     logger.debug("User %s submitted single task. Form data: %s" % (userid_prefix(), str(data)))
-    backend.submit_single_task(userid(), data)
+
+    key = request.args.get("key")
+    print "request args... ", request.args
+    global count
+
+    print "Audio dir: ",  audio_data_dir
+    with open(audio_data_dir + '/audio_' + "_" + str(count) + '.wav', 'wb') as f:
+        f.write(data)
+        count += 1
+
+    # Modified database schema: (session_id, user_id, task_number, image_id)
+    if type(data) == dict:
+        backend.submit_single_task(userid(), data)
+    else:
+        #TODO: Handle this more cleanly
+        rand_data = {'restaurant': -1,
+                      'restaurant_index': -1,
+                          'starter_text': 'cat',
+                          'valid': True}
+        backend.submit_single_task(userid(), rand_data)
 
 
 @socketio.on('joined', namespace='/chat')
@@ -117,6 +149,7 @@ def joined(message):
 def text(message):
     """Sent by a client when the user entered a new message.
     The message is sent to all people in the room."""
+    print "Sent message text..."
     msg = message['msg']
     write_to_file(msg)
     logger.debug("User %s said: %s" % (userid_prefix(), msg))
@@ -195,6 +228,7 @@ def emit_message_to_self(message, status_message=False):
     timestamp = datetime.now().strftime('%x %X')
     left_delim = "<" if status_message else ""
     right_delim = ">" if status_message else ""
+    print "logging to own chat window yo", message
     emit('message', {'msg': "[{}] {}{}{}".format(timestamp, left_delim, message, right_delim)}, room=request.sid)
 
 

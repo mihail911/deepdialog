@@ -13,7 +13,7 @@ class WaitingSession(object):
         if message and len(message) > 0:
             self.message = message
         else:
-            self.message = "Please wait while we try to find someone to pair you up with.."
+            self.message = "Generating image for car commands task"
         self.num_seconds = num_seconds
 
 

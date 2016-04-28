@@ -571,13 +571,15 @@ class BackendConnection(object):
 
     def submit_single_task(self, userid, user_input):
         def _complete_task_and_wait(cursor, userid, num_finished):
-            message = "Great, you've finished {} exercises! Waiting a few seconds for someone to chat with...".format(
+            print "Complete task and wait..."
+            message = "Great, you've finished {} exercises! Rendering new example...".format(
                 num_finished)
             logger.info("Updating user info for user %s after single task completion - transition to WAIT" % userid[:6])
             self._update_user(cursor, userid, status=Status.Waiting, message=message,
                               num_single_tasks_completed=num_finished)
 
         def _complete_task_and_finished(cursor, userid, num_finished):
+            print "Complete task and finished..."
             message = "<h3>Great, you've finished {} exercises!</h3>".format(num_finished)
             logger.info(
                 "Updating user info for user %s after single task completion - transition to FINISHED" % userid[:6])
@@ -585,6 +587,7 @@ class BackendConnection(object):
                               num_single_tasks_completed=num_finished)
 
         def _log_user_submission(cursor, userid, scenario_id, user_input):
+            print "Log single task user submission..."
             logger.debug("Logging submission from user %s to database. Submission: %s" % (userid[:6], str(user_input)))
             cursor.execute('INSERT INTO SingleTasks VALUES (?,?,?,?,?)',
                            (userid, scenario_id, user_input["restaurant_index"], user_input["restaurant"],

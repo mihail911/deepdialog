@@ -27,6 +27,7 @@ def set_or_get_userid():
     session["sid"] = request.cookies.get(app.session_cookie_name)
     if not session["sid"]:
         session["sid"] = str(uuid.uuid4().hex)
+    print "Session ID: ", session["sid"]
     return session["sid"]
 
 
@@ -52,6 +53,7 @@ def index():
     set_or_get_userid()
 
     # if there's no key in the URL, generate a key and add it to the URL
+    print "Request Args From Index: ", request.args
     if not request.args.get('key'):
         if request.args.get('mturk'):
             return redirect(url_for('main.index', key=generate_unique_key(), mturk=request.args.get('mturk')))
@@ -93,9 +95,10 @@ def index():
     elif status == Status.SingleTask:
         # get single task info (scenario, other configs) and render single task template
         logger.info("Getting single task information for user %s" % userid()[:6])
+        print "Logging information for user in single_task..."
         single_task_info = backend.get_single_task_info(userid())
         presentation_config = app.config["user_params"]["status_params"]["chat"]["presentation_config"]
-        return render_template('single_task.html',
+        return render_template('car_commands_single.html',
                                scenario=single_task_info.scenario,
                                agent=single_task_info.agent_info,
                                config=presentation_config,
@@ -110,6 +113,8 @@ def index():
         return render_template('finished.html',
                                finished_message=finished_info.message,
                                mturk_code=mturk_code)
+    # TODO: How to reduce to only single-user mode
+    # Have single user-mode be the only page that is loaded, instead of waiting to connect
     elif status == Status.Chat:
         # render chat template after getting chat information (scenario, room number, etc.) from backend
         logger.info("Getting chat information for user %s" % userid()[:6])

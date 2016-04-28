@@ -1,7 +1,7 @@
 {
     "status_params": {
 	"waiting": {
-	    "num_seconds": 15
+	    "num_seconds": 0.5
 	},
 	
 	"chat": {
@@ -14,7 +14,7 @@
 	
 	"single_task": {
 	    "num_seconds": -1,
-	    "max_tasks": 5
+	    "max_tasks": 3
 	},
 	
 	"finished": {
@@ -24,16 +24,16 @@
     
     "scenarios_json_file": "friend_scenarios.json",
     "single_tasks_json_file": "single_tasks.json",
-    "connection_timeout_num_seconds": 15,
-  	"templates_dir": "friend_templates",
+    "connection_timeout_num_seconds": 30,
+  	"templates_dir": "dialogue_templates",
     
     "db": {
-	"location": "/home/mkayser/research/deepdialog/chat/chat_state.db"
+	"location": "/Users/mihaileric/Documents/Research/Ford Project/DataCollection/chat_state.db"
     },
     
     "logging": {
-	"app_logs": "/home/mkayser/research/deepdialog/chat/chat.log",
-	"chat_dir": "/home/mkayser/research/deepdialog/chat/transcripts",
+	"app_logs": "/Users/mihaileric/Documents/Research/Ford Project/deepdialog/chat/chat.log",
+	"chat_dir": "/Users/mihaileric/Documents/Research/Ford Project/deepdialog/chat/transcripts",
 	"chat_delimiter": "---"
     }
 }

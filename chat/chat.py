@@ -35,6 +35,7 @@ if __name__ == '__main__':
     parser.add_argument('--log', help="File to log app output to", type=str, default="chat.log")
     args = parser.parse_args()
     params_file = args.p
+
     with open(params_file) as fin:
         params = json.load(fin)
 
