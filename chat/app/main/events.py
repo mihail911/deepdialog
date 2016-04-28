@@ -42,7 +42,7 @@ namespaces (one for the chat template and one for all non-chat templates), so th
 and so two different functions are required (one for each namespace).
 '''
 
-count = 0
+hit_count = 0
 
 
 @socketio.on('connect', namespace='/main')
@@ -111,17 +111,14 @@ def submit_task(data):
     :param data: A dict containing the single task data.
     :return: None
     """
+    global hit_count
     backend = get_backend()
     logger.debug("User %s submitted single task. Form data: %s" % (userid_prefix(), str(data)))
 
-    key = request.args.get("key")
-    print "request args... ", request.args
-    global count
-
-    print "Audio dir: ",  audio_data_dir
-    with open(audio_data_dir + '/audio_' + "_" + str(count) + '.wav', 'wb') as f:
+    session_key = session["key"]
+    with open(audio_data_dir + '/' + session_key + "_" + str(hit_count) + '.wav', 'wb') as f:
         f.write(data)
-        count += 1
+        hit_count += 1
 
     # Modified database schema: (session_id, user_id, task_number, image_id)
     if type(data) == dict:

@@ -137,8 +137,8 @@ class BackendConnection(object):
                     u = self._get_user_info(cursor, userid, assumed_status=assumed_status)
                     if u.status == Status.Waiting:
                         logger.debug("User %s is waiting. Checking if other users are available for chat..")
-                        self.attempt_join_room(userid)
-                        u = self._get_user_info(cursor, userid, assumed_status=assumed_status)
+                        #self.attempt_join_room(userid)
+                        #u = self._get_user_info(cursor, userid, assumed_status=assumed_status)
                     logger.debug("Returning TRUE (user status hasn't changed)")
                     return True
                 except (UnexpectedStatusException, ConnectionTimeoutException, StatusTimeoutException) as e:
@@ -538,9 +538,11 @@ class BackendConnection(object):
     def _update_user(self, cursor, userid, **kwargs):
         if "status" in kwargs:
             logger.info("Updating status for user %s to %s" % (userid[:6], Status._names[kwargs["status"]]))
+            print "Updating status for user %s to %s" % (userid[:6], Status._names[kwargs["status"]])
             kwargs["status_timestamp"] = current_timestamp_in_seconds()
         if "connected_status" in kwargs:
             logger.info("Updating connected status for user %s to %d" % (userid[:6], kwargs["connected_status"]))
+            print "Updating connected status for user %s to %d" % (userid[:6], kwargs["connected_status"])
             kwargs["connected_timestamp"] = current_timestamp_in_seconds()
         keys = sorted(kwargs.keys())
         values = [kwargs[k] for k in keys]

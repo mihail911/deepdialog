@@ -53,7 +53,7 @@ def index():
     set_or_get_userid()
 
     # if there's no key in the URL, generate a key and add it to the URL
-    print "Request Args From Index: ", request.args
+    #print "Request Args From Index: ", request.args
     if not request.args.get('key'):
         if request.args.get('mturk'):
             return redirect(url_for('main.index', key=generate_unique_key(), mturk=request.args.get('mturk')))

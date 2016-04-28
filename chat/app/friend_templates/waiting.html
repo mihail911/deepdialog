@@ -34,6 +34,7 @@
             });
     
             function pollServer() {
+            	console.log("Poll server entry");
                 socket.emit('check_status_change', {'current_status':'waiting'}, function(data) {
                     if (data['status_change']) {
                         clearInterval(pollInterval);

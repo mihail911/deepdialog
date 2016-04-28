@@ -87,7 +87,6 @@ if (navigator.getUserMedia) {
       deleteButton.textContent = 'Delete';
       deleteButton.className = 'delete';
 
-      //clipLabel.textContent = clipName;
 
 
       clipContainer.appendChild(audio);
@@ -118,16 +117,6 @@ if (navigator.getUserMedia) {
         evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
       }
 
-      // Post recording data to a server -- what is the path to save to local disk?
-      // console.log("Sending data to server...")
-      // var xhr = new XMLHttpRequest();
-      // var fd = new FormData();
-      // fd.append("responseRecording.ogg", blob);
-      // xhr.open("POST", "/Users/mihaileric/Documents/Research/Ford Project", true); // Error here!
-      // xhr.send(fd);
-
-
-      
     }
 
     mediaRecorder.ondataavailable = function(e) {
