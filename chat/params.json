@@ -1,7 +1,7 @@
 {
     "status_params": {
 	"waiting": {
-	    "num_seconds": 4
+	    "num_seconds": 0.5
 	},
 	
 	"chat": {
@@ -14,7 +14,7 @@
 	
 	"single_task": {
 	    "num_seconds": -1,
-	    "max_tasks": 3
+	    "max_tasks": 5
 	},
 	
 	"finished": {

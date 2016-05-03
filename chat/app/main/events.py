@@ -10,6 +10,7 @@ from .routes import userid
 import cPickle as pickle
 import logging
 import os
+import random
 
 
 '''
@@ -28,7 +29,6 @@ logger.addHandler(handler)
 curr_dir = os.path.dirname(os.getcwd())
 audio_data_dir = curr_dir + "/data/audio"
 if not os.path.exists(audio_data_dir):
-    print "making directory..."
     os.makedirs(audio_data_dir)
 
 
@@ -116,7 +116,10 @@ def submit_task(data):
     logger.debug("User %s submitted single task. Form data: %s" % (userid_prefix(), str(data)))
 
     session_key = session["key"]
-    with open(audio_data_dir + '/' + session_key + "_" + str(hit_count) + '.wav', 'wb') as f:
+    session_img = session["imgs"][0]
+    print "Session contents: ", session
+    with open(audio_data_dir + '/' + session_key + "_" + session_img + "_" +
+                      str(hit_count) + '.wav', 'wb') as f:
         f.write(data)
         hit_count += 1
 
@@ -131,6 +134,36 @@ def submit_task(data):
                           'valid': True}
         backend.submit_single_task(userid(), rand_data)
 
+
+@socketio.on('get_img_dir', namespace='/main')
+def send_img_dir_info(data):
+    """
+    Receives a ping from client-side asking for all images contained in directory and returns that
+    information to client.
+    :param data:
+    :return:
+    """
+    img_dir = curr_dir + "/chat/app/static/img/"
+    img_files = [img for img in os.listdir(img_dir) if os.path.isfile(os.path.join(img_dir, img))]
+    rand_img = random.choice(img_files)
+    print "Rand img: ", rand_img
+    try:
+        session["imgs"].append(rand_img)
+    except KeyError:
+        print "reinitializing..."
+        session["imgs"] = []
+        session["imgs"].append(rand_img)
+
+    emit("img_file", {"img": rand_img})
+
+
+@socketio.on('img_loaded', namespace='/main')
+def log_curr_img(data):
+    """
+    Receives the name of the image currently being loaded server
+    :param data:
+    :return:
+    """
 
 @socketio.on('joined', namespace='/chat')
 def joined(message):

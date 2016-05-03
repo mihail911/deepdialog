@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Record the Car Command!</title>
+    <link href="{{ url_for('static', filename='styles/app.css') }}" rel="stylesheet" type="text/css">
+
+  </head>
+  <body>
+
+    <div class="wrapper">
+
+      <header>
+        <h1><b>Instructions</b></h1>
+      </header>
+      <section class="instructions">
+
+
+{#         <h1> In the picture at the left, please record the command you would give a car system. Click the "Record" button to start recording, and then "Stop" once you have finished recording. If you want to rerecord your statement, just delete the original recording and repeat the procedure. Once you have finalized your recording, hit "Send Response" to send it to our servers.</h1>#}
+        <p>Your work will greatly contribute to a scientific research project related to the natural language task of dialogue response generation. Thank you in advance for your help!</p>
+
+          <ol>
+            <li>
+              Imagine that you are in a car that has a built-in entertainment system that you can talk with, and it will perform the car-related commands you give it.
+            </li>
+            <li>
+              You will be shown an image of some action being performed in a car. Your task is to record the audio of what you would say to a car system to have it perform the task described in the image.
+            </li>
+            <li>
+              When you have decided what you would say to a car system to have it perform the task described, click the "Record" button. The button will turn <font color="red">red</font> while it is recording.
+            </li>
+
+            <li>
+              Once you have finished recording, click the "Stop" button. An audio file of the recorded command will appear below the button.
+            </li>
+
+            <li>
+              Please play the recorded audio to ensure that the command you wanted to give the car is clearly recorded. If it is not, click the "Delete" button and record a new piece of audio.
+
+            </li>
+
+            <li>
+              Once you are happy with the command you have recorded, complete the task by hitting the "Send Response" button. This will send the audio to our servers and redirect you to the next task.
+            </li>
+          </ol>
+
+
+        <p> As an example of what we are looking for, consider the image below. Recording <b>either</b> of the following commands
+        would be perfectly acceptable:</p>
+
+          <ul>
+              <li>
+                  Take me to the nearest coffee shop.
+              </li>
+              <li>
+                  Drive me to a place where I can get coffee.
+              </li>
+          </ul>
+
+        <p> </p>
+
+        <div style="text-align: center;" class="instructions-img">
+          <img src="{{ url_for('static', filename='img/car-navigation.jpg') }}" alt="Car navigation" style="width:300px;height:150px;">
+        </div>
+
+        <div id="caveats">
+        <p>Here are some common points of confusion:
+
+          <ul>
+            <li>
+                <i>
+              Make sure the audio recording can be heard clearly. If it is not, please record again.
+                 </i>
+             </li>
+
+             <li>
+                 <i>
+              It is recommended that you use Mozilla Firefox as your browser when completing this HIT. Google Chrome should also work.
+                 </i>
+             </li>
+
+          </ul>
+        </p>
+        </div>
+
+      </section>
+
+
+      <div style="text-align: center;"><img src="{{ url_for('static', filename='img/car-navigation.jpg') }}" class="central-img" alt="Car navigation" style="width:350px;height:260px;" align="center"></div>
+        <p style="font-size:150%;"> Now for the actual task: <b> Record the command you would give a car to perform the action shown in the image above.</b> </p>
+
+      <section class="main-controls">
+        <canvas class="visualizer"></canvas>
+        <div id="buttons">
+          <button class="record">Record</button>
+          <button class="stop">Stop</button>
+          <button id="submit_task" class="send">Send Response</button>
+        </div>
+      </section>
+
+      <section class="sound-clips">
+
+
+      </section>
+
+      <!--
+      <section >
+        <form action="Responses-URL">  TODO: Change the URL where i want to submit form 
+        Your response: <textarea rows="4"  cols="50" ></textarea>
+        <input type="submit" value="Submit">
+        </form>
+      </section>
+        -->
+    </div>
+
+    <!-- <label for="toggle">❔</label> -->
+    <!-- <input type="checkbox" id="toggle">
+    <aside>
+      <h2>Instructions</h2>
+
+    </aside> -->
+
+    <!-- Below is your custom application script -->
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8"> </script>
+    <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+
+  </body>
+</html>

@@ -9,7 +9,7 @@ html, body {
 }
 
 body {
-  /*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;*/
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 0.8rem;
 }
 
@@ -20,46 +20,19 @@ body {
 }
 
 h1, h2 {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   text-align: center;
   font-weight: normal;
   padding: 0.5rem 0 0 0;
 }
 
-.instructions{
-  padding: 1.0rem;
-  align: left;
-  border: 3px solid navy;
-  margin-left: 0.5rem;
-  font-size: 1.1rem;
-}
-
-ul { margin-left: 0rem; padding-left: 1.9rem; padding-top: 0.5rem; }
-
-ol {margin-left: 0rem; padding-left: 1.9rem; padding-top: 0.5rem; padding-bottom: 0.5rem;}
-
-p {padding-top: 0.9rem; padding-bottom: 0.4rem; font-size: 1.1rem;}
-
-
-.instructions-img{
-  padding-left: 2rem;
-  align: center;
-  padding-bottom: 1rem;
-}
-
-.central-img{
-  padding: 0.5rem;
-  padding-top:0.5rem;
-}
-
-#caveats{
-  margin-bottom: 0.5rem;
-  padding-bottom: 1rem;
+.image{
+  padding: 0.5rem 0;
+  align: middle;
 }
 
 .main-controls {
-  padding-top: 0.5rem;
-  margin-top: 1rem;
+  padding: 0.5rem 0;
 }
 
 canvas {
@@ -107,7 +80,7 @@ button:active {
  * in the available space */
 .sound-clips {
   flex: 1;
-  padding-bottom: 3rem;
+  overflow: auto;
 }
 
 section, article {

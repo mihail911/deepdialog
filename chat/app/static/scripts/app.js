@@ -8,24 +8,61 @@ navigator.getUserMedia = ( navigator.getUserMedia ||
 
 // set up basic variables for app
 var socket;
+var all_images;
 $(document).ready(function() {
-                socket = io.connect('http://' + document.domain + ':' + location.port+'/main');
-                socket.on('disconnect', function() {
-                  socket.disconnect();
-                });
+        socket = io.connect('http://' + document.domain + ':' + location.port+'/main');
+        console.log("Document ready");
+        socket.on('disconnect', function() {
+          socket.disconnect();
             });
+
+        socket.on('img_file', function(data){
+          var img = data.img;
+
+          // Get a random image from directory of images and display it
+          console.log("Selected image: " + img);
+          img_src = document.querySelector(".central-img");
+          img_src.setAttribute("src", "/static/img/" + img);
+
+            });
+        socket.emit('get_img_dir', '', function() {
+                //window.location.reload(true);
+            });
+
+        });
+
+// Entire window is loaded
+$(window).load(function(){
+  //var record = document.querySelector('.record');
+  //var img_src = document.querySelector(".central-img");
+  //
+  //console.log("img src: " + img_src.getAttribute("src"));
+  //console.log("record: " + record);
+  //img_src.setAttribute("src",
+  //    "/static/img/honda.jpeg");
+  //console.log("All images: " + all_images);
+});
+
+
 var record = document.querySelector('.record');
 var stop = document.querySelector('.stop');
 var sendResponse = document.querySelector('.send');
 var soundClips = document.querySelector('.sound-clips');
 var canvas = document.querySelector('.visualizer');
 
-// disable stop button while not recording
+console.log("Some code is being run here...");
 
+// Replace image
+console.log("Replacing image...");
+
+// Ping server for image directory information
+
+// disable stop button while not recording
 stop.disabled = true;
 var data = null;
-// visualiser setup - create web audio api context and canvas
 
+
+// visualiser setup - create web audio api context and canvas
 var audioCtx = new (window.AudioContext || webkitAudioContext)();
 var canvasCtx = canvas.getContext("2d");
 
