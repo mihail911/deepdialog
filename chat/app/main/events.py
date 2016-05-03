@@ -117,7 +117,6 @@ def submit_task(data):
 
     session_key = session["key"]
     session_img = session["imgs"][0]
-    print "Session contents: ", session
     with open(audio_data_dir + '/' + session_key + "_" + session_img + "_" +
                       str(hit_count) + '.wav', 'wb') as f:
         f.write(data)
@@ -146,7 +145,6 @@ def send_img_dir_info(data):
     img_dir = curr_dir + "/chat/app/static/img/"
     img_files = [img for img in os.listdir(img_dir) if os.path.isfile(os.path.join(img_dir, img))]
     rand_img = random.choice(img_files)
-    print "Rand img: ", rand_img
     try:
         session["imgs"].append(rand_img)
     except KeyError:
@@ -164,6 +162,8 @@ def log_curr_img(data):
     :param data:
     :return:
     """
+    pass
+
 
 @socketio.on('joined', namespace='/chat')
 def joined(message):
