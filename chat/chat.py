@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-p', help="File containing app configuration params", type=str,
                         default="params.json")
-    parser.add_argument('--host', help="Host IP address to run app on - defaults to localhost", type=str, default="127.0.0.1")
+    parser.add_argument('--host', help="Host IP address to run app on - defaults to localhost", type=str, default="0.0.0.0")
     parser.add_argument('--log', help="File to log app output to", type=str, default="chat.log")
     args = parser.parse_args()
     params_file = args.p

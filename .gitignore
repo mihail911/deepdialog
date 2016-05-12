@@ -1,3 +1,6 @@
 *.pyc
 .idea/
 chat/app/dialogue_templates/*
+*.jpeg
+*.jpg
+*.png

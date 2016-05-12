@@ -14,7 +14,7 @@
 	
 	"single_task": {
 	    "num_seconds": -1,
-	    "max_tasks": 5
+	    "max_tasks": 3
 	},
 	
 	"finished": {
@@ -24,7 +24,7 @@
     
     "scenarios_json_file": "friend_scenarios.json",
     "single_tasks_json_file": "single_tasks.json",
-    "connection_timeout_num_seconds": 30,
+    "connection_timeout_num_seconds": 45,
   	"templates_dir": "dialogue_templates",
     
     "db": {
