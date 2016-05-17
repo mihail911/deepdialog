@@ -59,12 +59,12 @@ def get_params_json():
   	"templates_dir": "dialogue_templates",
 
     "db": {
-	"location": "/Users/mihaileric/Documents/Research/Ford Project/DataCollection/chat_state.db"
+	"location": "/afs/cs.stanford.edu/u/meric/scr/meric/FordProject/datacollection/chat_state.db"
     },
 
     "logging": {
-	"app_logs": "/Users/mihaileric/Documents/Research/Ford Project/deepdialog/chat/chat.log",
-	"chat_dir": "/Users/mihaileric/Documents/Research/Ford Project/deepdialog/chat/transcripts",
+	"app_logs": "/afs/cs.stanford.edu/u/meric/scr/meric/FordProject/datacollection/deepdialog/chat/chat.log",
+	"chat_dir": "/afs/cs.stanford.edu/u/meric/scr/meric/FordProject/datacollection/deepdialog/chat/transcripts",
 	"chat_delimiter": "---"
     }
     }"""
@@ -74,7 +74,8 @@ def get_params_json():
 
 # For not using the config file to get params
 params = get_params_json()
-host = "127.0.0.1"
+params = json.loads(params)
+host = "0.0.0.0"
 #log =
 
 #parser = ArgumentParser()
