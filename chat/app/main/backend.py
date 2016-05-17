@@ -591,9 +591,12 @@ class BackendConnection(object):
         def _log_user_submission(cursor, userid, scenario_id, user_input):
             print "Log single task user submission..."
             logger.debug("Logging submission from user %s to database. Submission: %s" % (userid[:6], str(user_input)))
-            cursor.execute('INSERT INTO SingleTasks VALUES (?,?,?,?,?)',
-                           (userid, scenario_id, user_input["restaurant_index"], user_input["restaurant"],
-                            user_input["starter_text"]))
+            # cursor.execute('INSERT INTO SingleTasks VALUES (?,?,?,?,?)',
+            #                (userid, scenario_id, user_input["restaurant_index"], user_input["restaurant"],
+            #                 user_input["starter_text"]))
+            # Update completedaudiotasks table
+            cursor.execute('INSERT INTO AudioTasks VALUES (?,?,?)',
+                           (userid, user_input["session_id"], user_input["img_name"]))
 
         try:
             with self.conn:
