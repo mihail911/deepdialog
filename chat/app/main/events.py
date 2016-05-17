@@ -122,16 +122,20 @@ def submit_task(data):
         f.write(data)
         hit_count += 1
 
+    # Note "data" is a binary string of audio
+
+    data_log = {"session_id": session_key, "img_name": session["imgs"][0]}
+
     # Modified database schema: (session_id, user_id, task_number, image_id)
     if type(data) == dict:
         backend.submit_single_task(userid(), data)
     else:
         #TODO: Handle this more cleanly
-        rand_data = {'restaurant': -1,
-                      'restaurant_index': -1,
-                          'starter_text': 'cat',
-                          'valid': True}
-        backend.submit_single_task(userid(), rand_data)
+        # rand_data = {'restaurant': -1,
+        #               'restaurant_index': -1,
+        #                   'starter_text': 'cat',
+        #                   'valid': True}
+        backend.submit_single_task(userid(), data_log)
 
 
 @socketio.on('get_img_dir', namespace='/main')

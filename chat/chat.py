@@ -17,7 +17,7 @@ def init_database(db_file):
     c.execute('''CREATE TABLE ActiveUsers (name text unique, status integer, status_timestamp integer, connected_status integer, connected_timestamp integer, message text, room_id integer, partner_id text, scenario_id text, agent_index integer, selected_index integer, single_task_id text, num_single_tasks_completed integer, num_chats_completed integer, cumulative_points integer, bonus integer)''')
     c.execute('''CREATE TABLE SingleTasks (name text, scenario_id text, selected_index integer, selected_restaurant text, start_text text)''')
     c.execute('''CREATE TABLE CompletedTasks (name text, mturk_code text, num_single_tasks_completed integer, num_chats_completed integer, bonus integer)''')
-    #c.execute('''CREATE TABLE Chatrooms (room_id integer, scenario_id text)''')
+    c.execute('''CREATE TABLE AudioTasks(name text, session_id text, image_name text)''')
     conn.commit()
     conn.close()
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-p', help="File containing app configuration params", type=str,
                         default="params.json")
-    parser.add_argument('--host', help="Host IP address to run app on - defaults to localhost", type=str, default="0.0.0.0")
+    parser.add_argument('--host', help="Host IP address to run app on - defaults to localhost", type=str, default="127.0.0.1")
     parser.add_argument('--log', help="File to log app output to", type=str, default="chat.log")
     args = parser.parse_args()
     params_file = args.p
