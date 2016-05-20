@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-p', help="File containing app configuration params", type=str,
                         default="params.json")
-    parser.add_argument('--host', help="Host IP address to run app on - defaults to localhost", type=str, default="127.0.0.1")
+    parser.add_argument('--host', help="Host IP address to run app on - defaults to localhost", type=str, default="0.0.0.0")
     parser.add_argument('--log', help="File to log app output to", type=str, default="chat.log")
     args = parser.parse_args()
     params_file = args.p
@@ -56,5 +56,8 @@ if __name__ == '__main__':
     app.config["outcomes"] = defaultdict(lambda : -1)
 
     # logging.basicConfig(filename=params["logging"]["app_logs"], level=logging.INFO)
-
+    #context = ("eliza-snlp_stanford_edu_cert.cer", "eliza-snlp_stanford_edu.key")
+    #context = ("server.crt", "server.key")
+    #socketio.run(app, host=args.host, ssl_context=context)
     socketio.run(app, host=args.host)
+
