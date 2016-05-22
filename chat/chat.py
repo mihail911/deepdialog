@@ -17,7 +17,7 @@ def init_database(db_file):
     c.execute('''CREATE TABLE ActiveUsers (name text unique, status integer, status_timestamp integer, connected_status integer, connected_timestamp integer, message text, room_id integer, partner_id text, scenario_id text, agent_index integer, selected_index integer, single_task_id text, num_single_tasks_completed integer, num_chats_completed integer, cumulative_points integer, bonus integer)''')
     c.execute('''CREATE TABLE SingleTasks (name text, scenario_id text, selected_index integer, selected_restaurant text, start_text text)''')
     c.execute('''CREATE TABLE CompletedTasks (name text, mturk_code text, num_single_tasks_completed integer, num_chats_completed integer, bonus integer)''')
-    #c.execute('''CREATE TABLE Chatrooms (room_id integer, scenario_id text)''')
+    c.execute('''CREATE TABLE AudioTasks(name text, session_id text, image_name text)''')
     conn.commit()
     conn.close()
 
@@ -59,12 +59,12 @@ def get_params_json():
   	"templates_dir": "dialogue_templates",
 
     "db": {
-	"location": "/afs/cs.stanford.edu/u/meric/scr/meric/FordProject/datacollection/chat_state.db"
+	"location": "/var/www/deepdialog/chatstate.db"
     },
 
     "logging": {
-	"app_logs": "/afs/cs.stanford.edu/u/meric/scr/meric/FordProject/datacollection/deepdialog/chat/chat.log",
-	"chat_dir": "/afs/cs.stanford.edu/u/meric/scr/meric/FordProject/datacollection/deepdialog/chat/transcripts",
+	"app_logs": "/var/www/deepdialog/chat.log",
+	"chat_dir": "/var/www/deepdialog/chat/transcripts",
 	"chat_delimiter": "---"
     }
     }"""
@@ -75,8 +75,7 @@ def get_params_json():
 # For not using the config file to get params
 params = get_params_json()
 params = json.loads(params)
-host = "0.0.0.0"
-#log =
+host = "127.0.0.1"
 
 #parser = ArgumentParser()
 #parser.add_argument('-p', help="File containing app configuration params", type=str,
@@ -108,4 +107,4 @@ app.config["outcomes"] = defaultdict(lambda: -1)
 # logging.basicConfig(filename=params["logging"]["app_logs"], level=logging.INFO)
 
 # May have to remove this for now -- is this necessary to have?
-socketio.run(app, host=host)
+socketio.run(app, port=5000, host=host)
