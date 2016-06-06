@@ -10,7 +10,7 @@ from flask import Markup
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler = logging.FileHandler("chat.log")
+handler = logging.FileHandler("/var/www/deepdialog/chat/chat.log")
 handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
@@ -119,7 +119,7 @@ class BackendConnection(object):
             now = current_timestamp_in_seconds()
             logger.debug("Created user %s" % username[:6])
             cursor.execute('''INSERT OR IGNORE INTO ActiveUsers VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
-                           (username, Status.Waiting, now, 0, now, "", -1, "", "", -1, -1, "", 0, 0, 0, 0))
+                           (username, Status.Waiting, now, 0, now, "", -1, "", "", -1, -1, "", 0, 0, 0, 0)) # Change to status.single_task first 
 
     def is_status_unchanged(self, userid, assumed_status):
         """
@@ -204,7 +204,7 @@ class BackendConnection(object):
                                                                                                                                                                :6])
                             self._update_user(cursor, userid, connected_status=1, status=Status.Waiting,
                                               num_single_tasks_completed=0)
-                            return Status.Waiting
+                            return Status.Waiting # Status.SingleTask
                         return u.status  # this should never happen because single tasks can't time out
                     elif u.status == Status.Chat:
                         if isinstance(e, ConnectionTimeoutException):

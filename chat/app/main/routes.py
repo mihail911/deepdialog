@@ -15,7 +15,7 @@ validation_wait_ctr = 0
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler = logging.FileHandler("chat.log")
+handler = logging.FileHandler("/var/www/deepdialog/chat/chat.log")
 handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 logger.addHandler(handler)

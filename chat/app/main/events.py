@@ -11,6 +11,7 @@ import cPickle as pickle
 import logging
 import os
 import random
+import werkzeug
 
 
 '''
@@ -20,14 +21,14 @@ Handles all events to and from client (browser). Interfaces with the backend (ba
 date_fmt = '%m-%d-%Y:%H-%M-%S'
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler = logging.FileHandler("chat.log")
+handler = logging.FileHandler("/var/www/deepdialog/chat/chat.log")
 handler.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 # Make audio dir
 curr_dir = os.path.dirname(os.getcwd())
-audio_data_dir = curr_dir + "/data/audio"
+audio_data_dir = "/var/www/deepdialog/data/audio"
 if not os.path.exists(audio_data_dir):
     os.makedirs(audio_data_dir)
 
@@ -50,6 +51,7 @@ def connect():
     """
     Signals backend when a user connects to the website on any template (page) other than the chat page.
     """
+    print "User connected here..."
     backend = get_backend()
     backend.connect(userid())
     logger.info("User %s established connection on non-chat template" % userid_prefix())
@@ -60,6 +62,7 @@ def connect():
     """
     Signals backend when a user connects to the website on the chat template.
     """
+    print "User connected on chat template"
     backend = get_backend()
     backend.connect(userid())
     logger.info("User %s established connection on chat template" % userid_prefix())
@@ -104,6 +107,12 @@ def check_status_change(data):
         return {'status_change': True}
 
 
+@socketio.on('img_name', namespace='/main')
+def img_name(data):
+    pass
+
+
+
 @socketio.on('submit_task', namespace='/main')
 def submit_task(data):
     """
@@ -111,21 +120,25 @@ def submit_task(data):
     :param data: A dict containing the single task data.
     :return: None
     """
+    print "Entering submit task..."
     global hit_count
     backend = get_backend()
-    logger.debug("User %s submitted single task. Form data: %s" % (userid_prefix(), str(data)))
+    #logger.debug("User %s submitted single task. Form data: %s" % (userid_prefix(), str(data)))
 
-    session_key = session["key"]
-    session_img = session["imgs"][0]
-    with open(audio_data_dir + '/' + session_key + "_" + session_img + "_" +
-                      str(hit_count) + '.wav', 'wb') as f:
-        f.write(data)
-        hit_count += 1
+    session_key = "key"#session["key"]
+    session_img = "img"#session["imgs"][0]
+    print "Session key: ", session_key
+    #with open(audio_data_dir + '/' + session_key + "_" + session_img + "_" +
+    #                  str(hit_count) + '.wav', 'wb') as f:
+    #    f.write(data)
+    #    hit_count += 1
 
     # Note "data" is a binary string of audio
 
-    data_log = {"session_id": session_key, "img_name": session["imgs"][0]}
-
+    #data_log = {"session_id": session_key, "img_name": session["imgs"][0]}
+    data_log = {"session_id": session_key, "img_name": "name"}
+ 
+    print "About to submit task"
     # Modified database schema: (session_id, user_id, task_number, image_id)
     if type(data) == dict:
         backend.submit_single_task(userid(), data)
@@ -135,7 +148,9 @@ def submit_task(data):
         #               'restaurant_index': -1,
         #                   'starter_text': 'cat',
         #                   'valid': True}
+        print "data log: ", data_log
         backend.submit_single_task(userid(), data_log)
+    print "Backend submitted..."
 
 
 @socketio.on('get_img_dir', namespace='/main')
@@ -146,7 +161,7 @@ def send_img_dir_info(data):
     :param data:
     :return:
     """
-    img_dir = curr_dir + "/chat/app/static/img/"
+    img_dir = "/var/www/deepdialog/chat/app/static/img/"
     img_files = [img for img in os.listdir(img_dir) if os.path.isfile(os.path.join(img_dir, img))]
     rand_img = random.choice(img_files)
     try:
@@ -155,7 +170,7 @@ def send_img_dir_info(data):
         print "reinitializing..."
         session["imgs"] = []
         session["imgs"].append(rand_img)
-
+    print "emit image: ", rand_img
     emit("img_file", {"img": rand_img})
 
 
